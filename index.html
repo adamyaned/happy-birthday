@@ -96,10 +96,21 @@
 
         #screen-card{
             z-index:10;
+            flex-direction: column;
+            justify-content: flex-start;
             background:
                     radial-gradient(circle at 12% 85%, rgba(155,127,212,0.4), transparent 55%),
                     radial-gradient(circle at 90% 12%, rgba(124,92,196,0.3), transparent 50%),
                     var(--cream);
+            padding: 20px 14px 28px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (min-height: 700px){
+            #screen-card{
+                justify-content: center;
+            }
         }
 
         .eyebrow{
@@ -282,24 +293,81 @@
             transition:max-height 0.6s ease, opacity 0.6s ease, margin-top 0.6s ease;
         }
         .message.show{
-            max-height:400px;
+            max-height:380px;
             opacity:1;
-            margin-top:18px;
+            margin-top:16px;
         }
         .message-inner{
             background:linear-gradient(135deg, rgba(155,127,212,0.12), rgba(255,184,198,0.12));
             border-radius:20px;
-            padding:22px 20px;
-            font-size:16px;
-            line-height:1.6;
+            padding:20px 18px;
+            font-size:15.5px;
+            line-height:1.55;
             color:var(--choc);
         }
         .message-inner strong{
             font-family:'Caveat',cursive;
-            font-size:26px;
+            font-size:24px;
             color:var(--purple-deep);
             display:block;
             margin-bottom:6px;
+        }
+
+        @media (max-width: 420px){
+            .message.show{
+                max-height:340px;
+                margin-top:12px;
+            }
+            .message-inner{
+                padding:16px 14px;
+                font-size:14.5px;
+                line-height:1.5;
+            }
+            .message-inner strong{
+                font-size:22px;
+            }
+        }
+
+        /* Cats GIF - below the card */
+        .cats-wrap{
+            position: relative;
+            z-index: 11;
+            margin-top: 20px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.8s ease, opacity 0.8s ease, margin-top 0.5s ease;
+            text-align: center;
+            width: 100%;
+            max-width: 280px;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+        .cats-wrap.show{
+            max-height: 260px;
+            opacity: 1;
+        }
+        .cats-wrap img{
+            width: 100%;
+            max-width: 150px;
+            border-radius: 18px;
+            box-shadow: 0 14px 32px -12px rgba(58,46,44,0.32);
+            display: block;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 420px){
+            .cats-wrap{
+                margin-top: 14px;
+                max-width: 200px;
+            }
+            .cats-wrap.show{
+                max-height: 190px;
+            }
+            .cats-wrap img{
+                max-width: 150px;
+                border-radius: 14px;
+            }
         }
 
         .heart{
@@ -403,8 +471,10 @@
         .replay:hover{ color:var(--coral); }
 
         @media (max-width:380px){
-            h1{ font-size:44px; }
-            .card{ padding:32px 20px 28px; }
+            h1{ font-size:42px; }
+            .card{ padding:28px 18px 22px; }
+            .cake-wrap{ margin-bottom:10px; }
+            .hint{ margin-bottom:4px; }
         }
 
         /* ===== SCREEN SYSTEM ===== */
@@ -616,7 +686,7 @@
             <div class="cake">
                 <div class="tier tier-top">
                     <div class="frosting"></div>
-                </div>\
+                </div>
                 <div class="tier tier-bottom"></div>
             </div>
             <div class="plate"></div>
@@ -627,13 +697,17 @@
         <div class="message" id="message">
             <div class="message-inner">
                 <strong>Շնորհավորում եմ! <span class="heart">♥</span></strong>
-                Թող այս տարին քեզ բերի շատ ժպիտներ, ավելի շատ համերգներ ու դրական էմոցիաներ։ Անմոռանալի լավ պահեր եմ ցանկանում քեզ ու հաջողություն կյանքի բոլոր բնագավառերում։
+                Թող այս տարին քեզ բերի շատ ժպիտներ, ավելի շատ համերգներ, ճանապարհորդություններ ու դրական էմոցիաներ։ Անմոռանալի լավ պահեր եմ ցանկանում քեզ ու հաջողություն կյանքի բոլոր բնագավառերում։
                 Մնա միշտ այսպիսին՝ բարի, անկեղծ ու նպատակասլաց․ Ծնունդդ շնորհավոր! 🎉
             </div>
         </div>
 
         <button class="replay" id="replayBtn" style="display:none;">նորից վառել մոմերը 🔄</button>
     </main>
+
+    <div class="cats-wrap" id="catsWrap">
+        <img src="cats-cat.gif" alt="">
+    </div>
 </section>
 
 <script>
@@ -641,6 +715,7 @@
         const candles = document.querySelectorAll('.candle');
         const hint = document.getElementById('hint');
         const message = document.getElementById('message');
+        const catsWrap = document.getElementById('catsWrap');
         const replayBtn = document.getElementById('replayBtn');
         const confettiLayer = document.getElementById('confettiLayer');
         const celebrateLayer = document.getElementById('celebrateLayer');
@@ -703,6 +778,7 @@
                 hint.textContent = 'Ցանկություն պահեցիր? 😊';
                 setTimeout(()=>{
                     message.classList.add('show');
+                    catsWrap.classList.add('show');
                     burstConfetti();
                     launchBalloons();
                     replayBtn.style.display = 'inline-block';
@@ -719,6 +795,7 @@
             blownCount = 0;
             hint.textContent = 'Սեղմիր մոմին, որ հանգցնես 👆';
             message.classList.remove('show');
+            catsWrap.classList.remove('show');
             replayBtn.style.display = 'none';
         });
     })();
